@@ -22,7 +22,7 @@ object Test {
 
   def worldQueryTestSingle(): Unit = {
     val entityIndex = 7
-    val (entityHealth, entityPosition) = world.query[Health, Position](entityIndex)
+    val (entityHealth: Health, entityPosition: Position) = world.query[Health, Position](entityIndex)
   }
 
   def worldQueryTestAll(): Unit = {
