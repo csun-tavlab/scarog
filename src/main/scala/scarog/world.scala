@@ -23,15 +23,19 @@ package scarog
 //
 
 import scala.collection.mutable.{Map => MMap}
-import scala.reflect._
 
 object World {
   type Entity = Int
 }
 import World.Entity
 
+object EntityMap {
+  def apply[A](): EntityMap[A] = EntityMap[A](MMap[Entity, A]())
+}
+
+case class EntityMap[A](map: MMap[Entity, A])
+
 class World(
-  var table: MMap[Entity, MMap[Class[_], Any]] = MMap(),
   var nextId: Int = 0
 ) {
 
@@ -41,33 +45,21 @@ class World(
     retval
   }
 
-  private def getMap(entity: Entity): MMap[Class[_], Any] = {
-    if (!table.contains(entity)) {
-      val retval = MMap[Class[_], Any]()
-      table += (entity -> retval)
-      retval
-    } else {
-      table(entity)
-    }
+  def writeComponent[A](entity: Entity, a: A)(implicit map: EntityMap[A]): Unit = {
+    map.map += (entity -> a)
   }
 
-  def writeComponent[A](entity: Entity, a: A): Unit = {
-    val map = getMap(entity)
-    map += (a.getClass -> a)
+  def removeComponent[A](entity: Entity)(implicit map: EntityMap[A]): Unit = {
+    map.map -= entity
   }
 
-  def removeComponent[A](entity: Entity)(implicit tag: ClassTag[A]): Unit = {
-    val map = getMap(entity)
-    map -= tag.runtimeClass
-  }
-
-  def readComponent[A](entity: Entity)(implicit tag: ClassTag[A]): Option[A] = {
-    getMap(entity).get(tag.runtimeClass).asInstanceOf[Option[A]]
+  def readComponent[A](entity: Entity)(implicit map: EntityMap[A]): Option[A] = {
+    map.map.get(entity)
   }
 
   def readComponent[A, B](entity: Entity)
-  (implicit t1: ClassTag[A],
-    t2: ClassTag[B]): (Option[A], Option[B]) = {
+  (implicit map1: EntityMap[A],
+    map2: EntityMap[B]): (Option[A], Option[B]) = {
     (readComponent[A](entity), readComponent[B](entity))
   }
 
