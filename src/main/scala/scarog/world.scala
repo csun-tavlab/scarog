@@ -1,3 +1,5 @@
+package scarog
+
 // C++:
 // template<typename T>
 // HashMap<int, T>& getMap() {

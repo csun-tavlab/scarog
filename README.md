@@ -1,4 +1,9 @@
-object Test {
+# Scarog
+
+ECS system in Scala, just for playing around.
+
+```scala
+object Examples {
   // Carmack
   def updateEntity(entity: Entity, world: World): Entity
 
@@ -75,3 +80,4 @@ object Test {
     })
   }
 }
+```
